@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Управление устройствами</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Тип</th>
+            <th>Порт</th>
+            <th>Состояние</th>
+            <th>Шлюз</th>
+            <th>Статус</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for device in devices %}
+        <tr>
+            <td>{{ device.id }}</td>
+            <td>{{ device.type }}</td>
+            <td>{{ device.port }}</td>
+            <td>{{ device.state }}</td>
+            <td>{{ device.gateway_id }}</td>
+            <td>
+                {% if device.compromised %}
+                    <span class="status-badge compromised">Скомпрометировано</span>
+                {% else %}
+                    <span class="status-badge active">Активно</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if not device.compromised %}
+                <button class="btn btn-danger" onclick="markCompromised('{{ device.id }}')">Пометить скомпрометированным</button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+function markCompromised(deviceId) {
+    fetch("{{ url_for('mark_compromised') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ device_id: deviceId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Устройство помечено как скомпрометированное');
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

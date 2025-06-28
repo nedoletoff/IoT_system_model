@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Управление шлюзами</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Хост</th>
+            <th>Порт</th>
+            <th>Облачный хост</th>
+            <th>Облачный порт</th>
+            <th>Последняя активность</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for gateway in gateways %}
+        <tr>
+            <td>{{ gateway.id }}</td>
+            <td>{{ gateway.host }}</td>
+            <td>{{ gateway.port }}</td>
+            <td>{{ gateway.cloud_host }}</td>
+            <td>{{ gateway.cloud_port }}</td>
+            <td>{{ gateway.last_seen }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

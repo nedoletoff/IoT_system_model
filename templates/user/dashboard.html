@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Личный кабинет</h2>
+
+<div class="token-section">
+    <h3>Ваши токены</h3>
+    {% if tokens %}
+    <table>
+        <thead>
+            <tr>
+                <th>Токен</th>
+                <th>Шлюз</th>
+                <th>Создан</th>
+                <th>Истекает</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for token in tokens %}
+            <tr>
+                <td class="token-value">{{ token.token }}</td>
+                <td>{{ token.gateway_id }}</td>
+                <td>{{ token.created_at }}</td>
+                <td>{{ token.expires_at }}</td>
+                <td>
+                    <a href="{{ url_for('user_devices', token=token.token) }}" class="btn btn-primary">
+                        Управление устройствами
+                    </a>
+                    <button class="btn btn-secondary" onclick="copyToClipboard('{{ token.token }}')">
+                        Копировать
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-info">
+        У вас нет активных токенов. Добавьте токен, полученный от администратора.
+    </div>
+    {% endif %}
+</div>
+
+<div class="add-token-section">
+    <h3>Добавить токен</h3>
+    <form method="POST" action="{{ url_for('user_insert_token') }}">
+        <div class="form-group">
+            <label for="token">Токен:</label>
+            <input type="text" id="token" name="token" class="form-control" placeholder="Введите токен" required>
+        </div>
+        <button type="submit" class="btn btn-success">Добавить токен</button>
+    </form>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text)
+        .then(() => alert('Токен скопирован в буфер обмена'))
+        .catch(err => alert('Ошибка копирования: ' + err));
+}
+</script>
+{% endblock %}

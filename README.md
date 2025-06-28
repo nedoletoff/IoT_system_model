@@ -100,10 +100,11 @@ graph TD
 ## Использование системы
 
 ### 1. Аутентификация
-![Login Screen](https://via.placeholder.com/600x300?text=Login+Screen)  
+![Login Screen](images/autorization.png)  
 *Экран входа в систему*
 
 ### 2. Панель управления
+![Admin Panel](images/admin_panel.png)
 **Для администраторов:**
 - Управление устройствами
 - Просмотр и создание шлюзов
@@ -116,7 +117,7 @@ graph TD
 - Контроль параметров устройств
 
 ### 3. Управление устройствами
-![Device Control](https://via.placeholder.com/800x400?text=Device+Control+Panel)  
+![Device Control](images/device_control.png)  
 *Панель управления устройствами*
 
 - **Лампочки**:

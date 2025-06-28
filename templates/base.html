@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление IoT системой</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-microchip"></i> Управление IoT системой</h1>
+            <nav>
+                <ul>
+                    {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> Главная</a></li>
+                        {% if current_user.is_admin %}
+                            <li><a href="{{ url_for('admin_devices') }}"><i class="fas fa-plug"></i> Устройства</a></li>
+                            <li><a href="{{ url_for('admin_gateways') }}"><i class="fas fa-server"></i> Шлюзы</a></li>
+                            <li><a href="{{ url_for('admin_tokens') }}"><i class="fas fa-key"></i> Токены</a></li>
+                            <li><a href="{{ url_for('admin_users') }}"><i class="fas fa-users"></i> Пользователи</a></li>
+                        {% endif %}
+                        <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Выйти</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Войти</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Управление IoT системой</p>
+        </div>
+    </footer>
+
+    <script>
+        // Добавление функций для работы с токенами
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text)
+                .then(() => alert('Скопировано в буфер обмена'))
+                .catch(err => console.error('Ошибка копирования: ', err));
+        }
+    </script>
+</body>
+</html>

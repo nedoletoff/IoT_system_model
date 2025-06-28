@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table>
+    <thead>
+        <tr>
+            <th>Пользователь</th>
+            <th>Токен</th>
+            <th>Шлюз</th>
+            <th>Создан</th>
+            <th>Истекает</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for token in tokens %}
+        <tr>
+            <td>{{ token.username }}</td>
+            <td class="token-value">{{ token.token }}</td>
+            <td>{{ token.gateway_id }}</td>
+            <td>{{ token.created_at }}</td>
+            <td>{{ token.expires_at }}</td>
+            <td>
+                <button class="btn btn-danger"
+                    onclick="deleteToken('{{ token.token }}')">
+                    Удалить
+                </button>
+                <button class="btn btn-secondary"
+                    onclick="copyToken('{{ token.token }}')">
+                    Копировать
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>>
+
+<h3>Создать новый токен</h3>
+<form id="generateTokenForm">
+    <div class="form-group">
+        <label for="userSelect">Пользователь:</label>
+        <select id="userSelect" class="form-control">
+            {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="gatewaySelect">Шлюз:</label>
+        <select id="gatewaySelect" class="form-control">
+            {% for gateway in gateways %}
+            <option value="{{ gateway.id }}">{{ gateway.id }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="expiresHours">Срок действия (часов):</label>
+        <input type="number" id="expiresHours" class="form-control" value="24" min="1">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="generateToken()">Создать токен</button>
+</form>
+
+<script>
+function generateToken() {
+    const userId = document.getElementById('userSelect').value;
+    const gatewayId = document.getElementById('gatewaySelect').value;
+    const expiresHours = document.getElementById('expiresHours').value;
+    
+    fetch("{{ url_for('admin_generate_token') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            gateway_id: gatewayId,
+            expires_hours: expiresHours
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Токен создан: ' + data.token);
+            location.reload();
+        } else {
+            alert('Ошибка: ' + data.message);
+        }
+    });
+}
+
+function deleteToken(token) {
+    if (confirm('Вы уверены, что хотите удалить этот токен?')) {
+        fetch("{{ url_for('delete_token') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token: token })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Токен удален');
+                location.reload();
+            } else {
+                alert('Ошибка: ' + data.message);
+            }
+        });
+    }
+}
+
+function copyToken(token) {
+    navigator.clipboard.writeText(token)
+        .then(() => alert('Токен скопирован в буфер обмена'))
+        .catch(err => alert('Ошибка копирования: ' + err));
+}
+</script>
+</script>
+{% endblock %}

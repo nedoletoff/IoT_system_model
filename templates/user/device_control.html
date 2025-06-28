@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Управление устройствами</h2>
+<p>Токен: {{ token }}</p>
+<p>Шлюз: {{ gateway_id }}</p>
+
+<div class="devices-grid">
+    {% for device in devices %}
+    <div class="device-card">
+        <h3>{{ device.id }} ({{ device.type }})</h3>
+
+        {% if device.type == 'bulb' %}
+            <div class="device-control">
+                <p>Яркость: {{ device.state.brightness }}%</p>
+                <input type="range" min="0" max="100" value="{{ device.state.brightness }}"
+                    onchange="setBrightness('{{ device.id }}', this.value)">
+                <button onclick="toggleDevice('{{ device.id }}', 'bulb')">
+                    {{ 'Выключить' if device.state.on else 'Включить' }}
+                </button>
+            </div>
+
+        {% elif device.type == 'lock' %}
+            <div class="device-control">
+                <p>Состояние: {{ 'Заперто' if device.state.locked else 'Открыто' }}</p>
+                <button onclick="toggleDevice('{{ device.id }}', 'lock')">
+                    {{ 'Отпереть' if device.state.locked else 'Запереть' }}
+                </button>
+            </div>
+
+        {% elif device.type == 'sensor' %}
+            <div class="device-control">
+                <p>Температура: {{ device.state.temperature }}°C</p>
+                <p>Влажность: {{ device.state.humidity }}%</p>
+                <button onclick="readSensor('{{ device.id }}')">Обновить показания</button>
+            </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+const token = "{{ token }}";
+
+function setBrightness(deviceId, value) {
+    sendCommand(deviceId, {action: 'set_brightness', value: parseInt(value)});
+}
+
+function toggleDevice(deviceId, type) {
+    if (type === 'bulb') {
+        sendCommand(deviceId, {action: 'toggle'});
+    } else if (type === 'lock') {
+        sendCommand(deviceId, {action: 'toggle_lock'});
+    }
+}
+
+function readSensor(deviceId) {
+    sendCommand(deviceId, {action: 'read'});
+}
+
+function sendCommand(deviceId, command) {
+    fetch("{{ url_for('send_command') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            token: token,
+            device_id: deviceId,
+            command: command
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        } else {
+            alert('Ошибка: ' + data.message);
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Административная панель</h2>
+<div class="stats">
+    <div class="stat-card">
+        <h3>Устройства</h3>
+        <p>{{ stats.devices }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Шлюзы</h3>
+        <p>{{ stats.gateways }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Пользователи</h3>
+        <p>{{ stats.users }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Токены</h3>
+        <p>{{ stats.active_tokens }}</p>
+    </div>
+</div>
+{% endblock %}
