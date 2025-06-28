@@ -118,7 +118,7 @@ graph TD
 - Контроль параметров устройств
 
 ### 3. Управление устройствами
-![Device Control](images/device_control.png)  
+![Device Control](images/control_device.png)  
 *Панель управления устройствами*
 
 - **Лампочки**:
